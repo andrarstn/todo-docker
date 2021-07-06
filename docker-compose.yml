@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+    dbsatu:
+        image: mysql:8.0
+        restart: always
+        command: --default-authentication-plugin=mysql_native_password
+        volumes:
+            - dbsatu-volume:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: cloud
+            MYSQL_DATABASE: todo_activity
+            MYSQL_USER: cloud
+            MYSQL_PASSWORD: cloud
+        networks:
+            - app-network
+
+    dbdua:
+        image: mysql:8.0
+        restart: always
+        command: --default-authentication-plugin=mysql_native_password
+        ports:
+            - "3307:3306"
+        volumes:
+            - dbdua-volume:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: cloud
+            MYSQL_DATABASE: todo_users
+            MYSQL_USER: cloud
+            MYSQL_PASSWORD: cloud
+        networks:
+            - app-network
+
+    app:
+        build: .
+        restart: always
+        depends_on:
+            - dbsatu
+            - dbdua
+        networks:
+            - app-network
+        ports:
+            - "8000:80"
+
+networks:
+    app-network:
+
+volumes:
+    dbsatu-volume:
+    dbdua-volume:
